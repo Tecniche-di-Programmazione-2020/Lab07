@@ -35,5 +35,33 @@ public class PowerOutageDAO {
 		return nercList;
 	}
 	
+	public List<PowerOutages> getPowerOutagesList(Nerc nerc) {
+		List<PowerOutages> result = new ArrayList<PowerOutages>() ;
+		
+		
+		String query = "SELECT id,customers_affected,date_event_began,date_event_finished FROM poweroutages WHERE nerc_id=?" ;
+		
+		try {
+			Connection conn = ConnectDB.getConnection() ;
+			PreparedStatement st = conn.prepareStatement(query) ;
+
+			
+			st.setInt(1, nerc.getId());
+			
+			
+
+
+			ResultSet res = st.executeQuery() ;
+			while(res.next()) {
+				result.add(new PowerOutages(res.getInt("id"),nerc,res.getInt("customers_affected"), res.getTimestamp("date_event_began").toLocalDateTime() ,res.getTimestamp("date_event_finished").toLocalDateTime() ) ) ;
+			}	
+			res.close();
+			conn.close();	
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result ;
+	}
 
 }
